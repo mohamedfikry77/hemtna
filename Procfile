@@ -1,1 +1,1 @@
-web: gunicorn run:app
+web: gunicorn hemtna1.run:app
