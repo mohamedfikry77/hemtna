@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة همتنا</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <button id="nav-login">تسجيل الدخول/تسجيل</button>
+    <button id="nav-profile" style="display:none">البروفايل</button>
+    <button id="nav-users" style="display:none">المستخدمون</button>
+    <button id="nav-posts" style="display:none">البوستات</button>
+    <button id="nav-activities" style="display:none">الأنشطة</button>
+    <button id="nav-chat" style="display:none">الشات</button>
+    <button id="nav-logout" style="display:none">تسجيل الخروج</button>
+  </nav>
+  <main>
+    <section id="section-login"></section>
+    <section id="section-profile" style="display:none"></section>
+    <section id="section-users" style="display:none"></section>
+    <section id="section-posts" style="display:none"></section>
+    <section id="section-activities" style="display:none"></section>
+    <section id="section-chat" style="display:none"></section>
+  </main>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html> 
