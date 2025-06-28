@@ -13,14 +13,18 @@ socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app():
     app = Flask(__name__)
+    
+    # المسار الصحيح لملف الإعدادات
     app.config.from_pyfile(os.path.join(os.path.dirname(__file__), '../../config.py'))
 
+    # تهيئة الإضافات
     db.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
     CORS(app)
     socketio.init_app(app)
 
+    # تسجيل المسارات
     from hemtna1.app.routes.auth import auth_bp
     from hemtna1.app.routes.posts import posts_bp
     from hemtna1.app.routes.messages import messages_bp
@@ -35,6 +39,7 @@ def create_app():
     app.register_blueprint(chat_rooms_bp)
     app.register_blueprint(activities_bp, url_prefix="/api/activities")
 
+    # إنشاء قاعدة البيانات في أول مرة
     with app.app_context():
         db.create_all()
 

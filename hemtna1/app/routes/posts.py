@@ -1,15 +1,11 @@
-"""
-Routes for managing posts (CRUD, image upload, likes, comments, views).
-"""
-from flask import Blueprint, request, jsonify, url_for, current_app
-from app import db
-from app.models import Post, User, PostLike, PostComment
-from app.utils import save_image
+from flask import Blueprint, request, jsonify, url_for
+from hemtna1.app import db
+from hemtna1.app.models import Post, User, PostLike, PostComment
+from hemtna1.app.utils import save_image
 
 posts_bp = Blueprint('posts_bp', __name__, url_prefix="/api/posts")
 
 def allowed_post_image(filename):
-    """Check if the filename has an allowed image extension."""
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     return filename and '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -21,7 +17,6 @@ def safe_int(val, default=None):
 
 @posts_bp.route('/', methods=['GET'])
 def get_posts():
-    """Get all posts with doctor info, likes, comments, views, and image url."""
     posts = Post.query.all()
     result = []
     for post in posts:
@@ -47,18 +42,20 @@ def get_posts():
 
 @posts_bp.route('/', methods=['POST'])
 def add_post():
-    """Add a new post (with optional image upload)."""
     if request.content_type and request.content_type.startswith('multipart/form-data'):
         data = request.form
         file = request.files.get('image')
     else:
         data = request.get_json()
         file = None
+
     if not all(k in data for k in ("title", "content")):
         return jsonify({"success": False, "error": "Missing title or content"}), 400
+
     image_filename = None
     if file and allowed_post_image(file.filename):
         image_filename = save_image(file, 'post_images')
+
     new_post = Post(
         title=data.get("title", ""),
         content=data.get("content", ""),
@@ -72,7 +69,6 @@ def add_post():
 
 @posts_bp.route('/<int:id>', methods=['PUT'])
 def update_post(id):
-    """Update an existing post."""
     post = Post.query.get(id)
     if not post:
         return jsonify({"success": False, "error": "Post not found"}), 404
@@ -85,7 +81,6 @@ def update_post(id):
 
 @posts_bp.route('/<int:id>', methods=['DELETE'])
 def delete_post(id):
-    """Delete a post by ID."""
     post = Post.query.get(id)
     if not post:
         return jsonify({"success": False, "error": "Post not found"}), 404
@@ -95,7 +90,6 @@ def delete_post(id):
 
 @posts_bp.route('/<int:post_id>/like', methods=['POST'])
 def like_post(post_id):
-    """Like or unlike a post by user_id."""
     data = request.get_json()
     user_id = data.get('user_id')
     if not user_id:
@@ -113,7 +107,6 @@ def like_post(post_id):
 
 @posts_bp.route('/<int:post_id>/comment', methods=['POST'])
 def add_comment(post_id):
-    """Add a comment to a post."""
     data = request.get_json()
     user_id = data.get('user_id')
     comment = data.get('comment')
@@ -126,7 +119,6 @@ def add_comment(post_id):
 
 @posts_bp.route('/<int:post_id>/comments', methods=['GET'])
 def get_comments(post_id):
-    """Get all comments for a post."""
     comments = PostComment.query.filter_by(post_id=post_id).order_by(PostComment.timestamp.asc()).all()
     result = []
     for c in comments:
@@ -143,7 +135,6 @@ def get_comments(post_id):
 
 @posts_bp.route('/<int:post_id>/view', methods=['POST'])
 def increase_views(post_id):
-    """Increase the view count for a post."""
     post = Post.query.get(post_id)
     if not post:
         return jsonify({"success": False, "error": "Post not found"}), 404

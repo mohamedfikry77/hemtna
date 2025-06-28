@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db
+from hemtna1.app import db  # ✅ التعديل الصحيح هنا
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,11 +24,9 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     category = db.Column(db.String(100))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # لو الدكتور هو المستخدم
     doctor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    views = db.Column(db.Integer, default=0)  # عدد المشاهدات
-    image = db.Column(db.String(255), nullable=True)  # صورة البوست
+    views = db.Column(db.Integer, default=0)
+    image = db.Column(db.String(255), nullable=True)
     likes = db.relationship('PostLike', back_populates='post', cascade='all, delete-orphan')
     comments = db.relationship('PostComment', back_populates='post', cascade='all, delete-orphan')
 
@@ -61,13 +59,13 @@ class Activity(db.Model):
     duration = db.Column(db.String(50), nullable=True)
     activity_image = db.Column(db.String(255), nullable=True)
     details = db.Column(db.Text, nullable=False)
-    start_date = db.Column(db.Date, nullable=True)  # تاريخ البداية
-    end_date = db.Column(db.Date, nullable=True)    # تاريخ النهاية
+    start_date = db.Column(db.Date, nullable=True)
+    end_date = db.Column(db.Date, nullable=True)
     is_done = db.Column(db.Boolean, default=False)
     score = db.Column(db.Integer, default=0)
-    child_name = db.Column(db.String(100), nullable=True)  # أصبح اختياري
-    doctor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # أصبح اختياري
-    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # أصبح اختياري
+    child_name = db.Column(db.String(100), nullable=True)
+    doctor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Room(db.Model):
@@ -82,4 +80,3 @@ class RoomUser(db.Model):
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     room = db.relationship('Room', back_populates='users')
-    # يمكن إضافة علاقة للمستخدم إذا احتجت لاحقًا

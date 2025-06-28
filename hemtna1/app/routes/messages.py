@@ -1,12 +1,10 @@
 from flask import Blueprint, url_for
-from app import db
-from app.models import Message, User
-from app.__init__ import socketio
+from hemtna1.app import db, socketio  # ✅ مسارات الاستيراد الصحيحة
+from hemtna1.app.models import Message, User
 from flask_socketio import emit
 
 messages_bp = Blueprint('messages', __name__)
 
-# SocketIO event: استقبال رسالة جديدة مع دعم الغرف
 @socketio.on('send_message')
 def handle_send_message(data):
     msg = Message(
@@ -27,7 +25,6 @@ def handle_send_message(data):
         'profile_picture': url_for('static', filename='profile_pics/' + (user.profile_picture if user and user.profile_picture else 'default.png'), _external=True)
     }, room=data.get('room'))
 
-# SocketIO event: تعديل رسالة
 @socketio.on('edit_message')
 def handle_edit_message(data):
     msg = Message.query.get(data['id'])
@@ -42,7 +39,6 @@ def handle_edit_message(data):
             'profile_picture': url_for('static', filename='profile_pics/' + (user.profile_picture if user and user.profile_picture else 'default.png'), _external=True)
         }, room=data.get('room'))
 
-# SocketIO event: حذف رسالة
 @socketio.on('delete_message')
 def handle_delete_message(data):
     msg = Message.query.get(data['id'])
@@ -51,18 +47,19 @@ def handle_delete_message(data):
         db.session.commit()
         emit('message_deleted', {'id': data['id']}, room=data.get('room'))
 
-# SocketIO event: جلب رسائل غرفة أو محادثة
 @socketio.on('get_messages')
 def handle_get_messages(data):
     room = data.get('room')
     user_id = data.get('user_id')
     doctor_id = data.get('doctor_id')
+
     if room:
         messages = Message.query.all()
     elif user_id and doctor_id:
         messages = Message.query.filter_by(user_id=user_id, doctor_id=doctor_id).all()
     else:
         messages = Message.query.all()
+
     result = []
     for msg in messages:
         user = User.query.get(msg.user_id)
