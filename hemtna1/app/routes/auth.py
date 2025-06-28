@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, url_for
-from hemtna1.app import db
-from hemtna1.app.models import User
-from hemtna1.app.utils.auth_helpers import generate_token
+from app import db
+from app.models import User
 from werkzeug.security import generate_password_hash, check_password_hash
+from app.utils.auth_helpers import generate_token
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, decode_token
 from datetime import timedelta, datetime
 
@@ -27,7 +27,7 @@ def register():
     new_user.category = data.get('category', '')
     new_user.phone = data['phone']
     new_user.country_code = data.get('country_code', '')
-    
+    # معالجة تاريخ الميلاد وتحويله إلى كائن تاريخ
     child_birthdate_str = data.get('child_birthdate', None)
     child_birthdate = None
     if child_birthdate_str:
@@ -37,7 +37,7 @@ def register():
             child_birthdate = None
     new_user.child_birthdate = child_birthdate
 
-    if user_type == 'parent':
+    if user_type == 'parent' or user_type == 'Child':
         new_user.child_education_level = data.get('child_education_level', '')
         new_user.child_problem = data.get('child_problem', '')
     if user_type == 'doctor':
@@ -61,23 +61,26 @@ def login():
 @jwt_required()
 def me():
     identity = get_jwt_identity()
-    user = User.query.get(identity['id'])
+    # تحويل identity إلى integer إذا كان string
+    user_id = int(identity) if isinstance(identity, str) else identity
+    user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
     return jsonify({
         "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "user_type": user.user_type,
-        "category": user.category,
-        "first_name": getattr(user, 'first_name', None),
-        "last_name": getattr(user, 'last_name', None),
-        "phone": getattr(user, 'phone', None),
-        "country_code": getattr(user, 'country_code', None),
-        "child_birthdate": getattr(user, 'child_birthdate', None),
-        "child_education_level": getattr(user, 'child_education_level', None),
-        "child_problem": getattr(user, 'child_problem', None),
-        "doctor_specialty": getattr(user, 'doctor_specialty', None)
+        "username": user.username or "",
+        "email": user.email or "",
+        "user_type": user.user_type or "",
+        "category": user.category or "",
+        "first_name": user.first_name or "",
+        "last_name": user.last_name or "",
+        "phone": user.phone or "",
+        "country_code": user.country_code or "",
+        "child_birthdate": user.child_birthdate.isoformat() if user.child_birthdate else "",
+        "child_education_level": user.child_education_level or "",
+        "child_problem": user.child_problem or "",
+        "doctor_specialty": user.doctor_specialty or "",
+        "profile_picture": url_for('static', filename='profile_pics/' + (user.profile_picture if user.profile_picture else 'default.png'), _external=True)
     }), 200
 
 @auth_bp.route('/forgot-password', methods=['POST'])
@@ -87,9 +90,11 @@ def forgot_password():
     user = User.query.filter_by(email=email).first()
     if not user:
         return jsonify({"error": "No user with this email"}), 404
-    reset_token = create_access_token(identity={"id": user.id}, expires_delta=timedelta(minutes=30))
-    reset_url = url_for('auth.reset_password_page', token=reset_token, _external=True)
-    return jsonify({"message": "Reset link generated.", "reset_url": reset_url})
+    # إنشاء توكن يحتوي على معرف المستخدم
+    reset_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=30))
+    # في بيئة الإنتاج: أرسل الرابط بالإيميل
+    # هنا: أرجع التوكن في الرد
+    return jsonify({"message": "Reset token generated.", "reset_token": reset_token})
 
 @auth_bp.route('/reset-password', methods=['POST'])
 def reset_password():
@@ -100,8 +105,11 @@ def reset_password():
         return jsonify({"error": "Missing token or password"}), 400
     try:
         decoded = decode_token(token)
-        user_id = decoded['sub']['id']
-    except Exception:
+        # التوكن يحتوي على معرف المستخدم مباشرة
+        user_id = decoded['sub']
+        # تحويل user_id إلى integer إذا كان string
+        user_id = int(user_id) if isinstance(user_id, str) else user_id
+    except Exception as e:
         return jsonify({"error": "Invalid or expired token"}), 400
     user = User.query.get(user_id)
     if not user:
