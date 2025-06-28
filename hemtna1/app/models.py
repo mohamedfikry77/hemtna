@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db
+from hemtna1.app import db
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, url_for
-from app import db
-from app.models import User
+from hemtna1.app import db
+from hemtna1.app.models import User
+from hemtna1.app.utils.auth_helpers import generate_token
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.utils.auth_helpers import generate_token
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, decode_token
 from datetime import timedelta, datetime
 
@@ -27,7 +27,7 @@ def register():
     new_user.category = data.get('category', '')
     new_user.phone = data['phone']
     new_user.country_code = data.get('country_code', '')
-    # معالجة تاريخ الميلاد وتحويله إلى كائن تاريخ
+    
     child_birthdate_str = data.get('child_birthdate', None)
     child_birthdate = None
     if child_birthdate_str:
@@ -89,8 +89,6 @@ def forgot_password():
         return jsonify({"error": "No user with this email"}), 404
     reset_token = create_access_token(identity={"id": user.id}, expires_delta=timedelta(minutes=30))
     reset_url = url_for('auth.reset_password_page', token=reset_token, _external=True)
-    # في بيئة الإنتاج: أرسل الرابط بالإيميل
-    # هنا: أرجع الرابط في الرد
     return jsonify({"message": "Reset link generated.", "reset_url": reset_url})
 
 @auth_bp.route('/reset-password', methods=['POST'])

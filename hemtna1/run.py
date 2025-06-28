@@ -1,4 +1,4 @@
-from app import create_app, socketio
+from hemtna1.app import create_app, socketio
 
 app = create_app()
 

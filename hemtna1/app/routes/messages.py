@@ -1,12 +1,10 @@
 from flask import Blueprint
-from app import db
-from app.models import Message, User
-from app.__init__ import socketio
+from hemtna1.app import db, socketio
+from hemtna1.app.models import Message, User
 from flask_socketio import emit
 
 messages_bp = Blueprint('messages', __name__)
 
-# SocketIO event: استقبال رسالة جديدة مع دعم الغرف
 @socketio.on('send_message')
 def handle_send_message(data):
     msg = Message(
@@ -27,7 +25,6 @@ def handle_send_message(data):
         'profile_picture': user.profile_picture if user else None
     }, room=data.get('room'))
 
-# SocketIO event: تعديل رسالة
 @socketio.on('edit_message')
 def handle_edit_message(data):
     msg = Message.query.get(data['id'])
@@ -42,7 +39,6 @@ def handle_edit_message(data):
             'profile_picture': user.profile_picture if user else None
         }, room=data.get('room'))
 
-# SocketIO event: حذف رسالة
 @socketio.on('delete_message')
 def handle_delete_message(data):
     msg = Message.query.get(data['id'])
@@ -51,7 +47,6 @@ def handle_delete_message(data):
         db.session.commit()
         emit('message_deleted', {'id': data['id']}, room=data.get('room'))
 
-# SocketIO event: جلب رسائل غرفة أو محادثة
 @socketio.on('get_messages')
 def handle_get_messages(data):
     room = data.get('room')

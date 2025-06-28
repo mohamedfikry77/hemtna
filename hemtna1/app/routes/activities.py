@@ -2,9 +2,9 @@
 Routes for managing activities (CRUD, image upload, scoring, etc).
 """
 from flask import Blueprint, request, jsonify, current_app, url_for
-from app import db
-from app.models import Activity
-from app.utils import save_image
+from hemtna1.app import db
+from hemtna1.app.models import Activity
+from hemtna1.app.utils import save_image
 
 activities_bp = Blueprint('activities', __name__)
 
@@ -92,7 +92,6 @@ def update_activity(id):
     else:
         data = request.get_json()
         file = None
-    # تحديث الحقول مع التحويل المناسب للأنواع
     if "activity_name" in data:
         activity.activity_name = data["activity_name"]
     if "duration" in data:
@@ -108,7 +107,6 @@ def update_activity(id):
     if "is_done" in data and data["is_done"] not in (None, ""):
         activity.is_done = bool(safe_int(data["is_done"]))
         activity.score = 100 if safe_int(data["is_done"]) else 0
-    # تحديث الصورة فقط إذا تم رفع صورة جديدة
     if file and allowed_activity_image(file.filename):
         activity.activity_image = save_image(file, 'activity_images')
     db.session.commit()
