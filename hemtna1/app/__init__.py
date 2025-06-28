@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_socketio import SocketIO
 import os
 
+# تهيئة الإضافات
 db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate()
@@ -13,18 +14,19 @@ socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app():
     app = Flask(__name__)
-    
-    # المسار الصحيح لملف الإعدادات
-    app.config.from_pyfile(os.path.join(os.path.dirname(__file__), '../../config.py'))
 
-    # تهيئة الإضافات
+    # تحميل الإعدادات من ملف config.py في الجذر
+    config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../config.py'))
+    app.config.from_pyfile(config_path)
+
+    # تهيئة الإضافات مع التطبيق
     db.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
     CORS(app)
     socketio.init_app(app)
 
-    # تسجيل المسارات
+    # تسجيل الـ Blueprints
     from hemtna1.app.routes.auth import auth_bp
     from hemtna1.app.routes.posts import posts_bp
     from hemtna1.app.routes.messages import messages_bp
@@ -36,10 +38,15 @@ def create_app():
     app.register_blueprint(posts_bp, url_prefix="/api/posts")
     app.register_blueprint(messages_bp, url_prefix="/api/messages")
     app.register_blueprint(users_bp, url_prefix="/api/users")
-    app.register_blueprint(chat_rooms_bp)
+    app.register_blueprint(chat_rooms_bp, url_prefix="/api/chat_rooms")
     app.register_blueprint(activities_bp, url_prefix="/api/activities")
 
-    # إنشاء قاعدة البيانات في أول مرة
+    # إعداد صفحة البداية
+    @app.route('/')
+    def index():
+        return "🚀Shaban is creating Hemtna API !"
+
+    # التأكد من أن الجداول موجودة
     with app.app_context():
         db.create_all()
 
