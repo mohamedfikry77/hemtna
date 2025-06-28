@@ -1,5 +1,5 @@
 from datetime import datetime
-from hemtna1.app import db
+from app import db
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,11 +61,13 @@ class Activity(db.Model):
     duration = db.Column(db.String(50), nullable=True)
     activity_image = db.Column(db.String(255), nullable=True)
     details = db.Column(db.Text, nullable=False)
+    start_date = db.Column(db.Date, nullable=True)  # تاريخ البداية
+    end_date = db.Column(db.Date, nullable=True)    # تاريخ النهاية
     is_done = db.Column(db.Boolean, default=False)
     score = db.Column(db.Integer, default=0)
-    child_name = db.Column(db.String(100), nullable=False)
-    doctor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    child_name = db.Column(db.String(100), nullable=True)  # أصبح اختياري
+    doctor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # أصبح اختياري
+    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # أصبح اختياري
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Room(db.Model):
