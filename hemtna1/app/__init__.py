@@ -38,6 +38,7 @@ def create_app():
     app.register_blueprint(posts_bp, url_prefix="/api/posts")
     app.register_blueprint(messages_bp, url_prefix="/api/messages")
     app.register_blueprint(users_bp, url_prefix="/api/users")
+    
     app.register_blueprint(chat_rooms_bp, url_prefix="/api/chat_rooms")
     app.register_blueprint(activities_bp, url_prefix="/api/activities")
 
