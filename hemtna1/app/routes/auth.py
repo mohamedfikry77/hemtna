@@ -54,7 +54,7 @@ def login():
     if not user or not check_password_hash(user.password, data['password']):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    token = generate_token(user.id, user.user_type)
+    token = generate_token(str(user.id), user.user_type)
     return jsonify({"token": token, "username": user.username, "role": user.user_type})
 
 @auth_bp.route('/me', methods=['GET'])
@@ -90,7 +90,7 @@ def forgot_password():
     if not user:
         return jsonify({"error": "No user with this email"}), 404
 
-    reset_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=30))
+    reset_token = create_access_token(identity=str(user.id), expires_delta=timedelta(minutes=30))
     return jsonify({"message": "Reset token generated.", "reset_token": reset_token})
 
 @auth_bp.route('/reset-password', methods=['POST'])
