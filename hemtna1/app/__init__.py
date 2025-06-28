@@ -32,13 +32,13 @@ def create_app():
     socketio.init_app(app)
 
     # --- Register blueprints (routes) ---
-    from app.routes.auth import auth_bp
-    from app.routes.posts import posts_bp
-    from app.routes.messages import messages_bp
-    from app.routes.users import users_bp
-    from app.routes.chat_rooms import chat_rooms_bp
-    from app.routes.activities import activities_bp
-    
+    from hemtna1.app.routes.auth import auth_bp
+    from hemtna1.app.routes.posts import posts_bp
+    from hemtna1.app.routes.messages import messages_bp
+    from hemtna1.app.routes.users import users_bp
+    from hemtna1.app.routes.chat_rooms import chat_rooms_bp
+    from hemtna1.app.routes.activities import activities_bp
+
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(posts_bp, url_prefix="/api/posts")
     app.register_blueprint(messages_bp, url_prefix="/api/messages")
