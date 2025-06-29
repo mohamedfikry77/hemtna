@@ -33,5 +33,4 @@ def create_app():
 
     return app
 
-# تصدير المتغيرات المطلوبة لـ gunicorn
-app = create_app()
+
