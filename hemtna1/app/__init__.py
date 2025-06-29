@@ -13,7 +13,7 @@ migrate = Migrate()
 socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app():
-    app = Flask(__name__, static_folder='static')
+    app = Flask(__name__)
     # تحميل الإعدادات من ملف config.py في الجذر
     config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../config.py'))
     app.config.from_pyfile(config_path)
@@ -49,5 +49,5 @@ def create_app():
     # التأكد من أن الجداول موجودة
     with app.app_context():
         db.create_all()
-
+    socketio.init_app(app)
     return app
