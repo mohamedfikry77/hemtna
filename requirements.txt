@@ -10,3 +10,5 @@ python-dotenv
 flask-socketio
 eventlet
 gunicorn
+flask-socketio
+eventlet>=0.33.0
