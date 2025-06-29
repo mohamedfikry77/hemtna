@@ -44,7 +44,7 @@ def create_app():
     # إعداد صفحة البداية
     @app.route('/')
     def index():
-        return "🚀Shaban is creating Hemtna API !"
+        return "🚀Baraa is creating Hemtna API !"
 
     # التأكد من أن الجداول موجودة
     with app.app_context():
