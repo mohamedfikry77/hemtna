@@ -18,6 +18,7 @@ def get_users():
     for user in users:
         result.append({
             "id": user.id,
+            "username": user.username or "",
             "email": user.email or "",
             "user_type": user.user_type or "",
             "category": user.category or "",
@@ -29,9 +30,10 @@ def get_users():
             "child_education_level": user.child_education_level or "",
             "child_problem": user.child_problem or "",
             "doctor_specialty": user.doctor_specialty or "",
-            "profile_picture": url_for('static', filename='profile_pics/' + (user.profile_picture if user.profile_picture else 'default.png'), _external=True)
+            "profile_picture": None if not user.profile_picture else url_for('static', filename='profile_pics/' + user.profile_picture, _external=True)
         })
     return jsonify({"success": True, "data": result})
+
 
 @users_bp.route('/', methods=['POST'])
 def add_user():

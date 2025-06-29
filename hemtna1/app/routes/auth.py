@@ -84,6 +84,7 @@ def me():
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
+
     return jsonify({
         "id": user.id,
         "username": user.username or "",
@@ -98,11 +99,9 @@ def me():
         "child_education_level": user.child_education_level or "",
         "child_problem": user.child_problem or "",
         "doctor_specialty": user.doctor_specialty or "",
-        "profile_picture": (
-            url_for('static', filename='profile_pics/' + user.profile_picture, _external=True)
-            if user.profile_picture else None
-        )
+        "profile_picture": None if not user.profile_picture else url_for('static', filename='profile_pics/' + user.profile_picture, _external=True)
     }), 200
+
 
 
 @auth_bp.route('/forgot-password', methods=['POST'])
