@@ -33,7 +33,7 @@ def create_app():
     from hemtna1.app.routes.users import users_bp
     from hemtna1.app.routes.chat_rooms import chat_rooms_bp
     from hemtna1.app.routes.activities import activities_bp
-    from .image_utils import save_image  # أو من المكان اللي فيه فعلاً
+    
 
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")

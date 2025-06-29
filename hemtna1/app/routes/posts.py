@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, url_for
 from hemtna1.app import db
 from hemtna1.app.models import Post, User, PostLike, PostComment
 from hemtna1.app.utils import save_image
+#from hemtna1.app.utils import save_image
 
 posts_bp = Blueprint('posts_bp', __name__, url_prefix="/api/posts")
 
