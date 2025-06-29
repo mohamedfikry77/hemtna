@@ -1,1 +1,1 @@
-web: python run.py
+gunicorn --worker-class eventlet -w 1 run:app
