@@ -7,8 +7,8 @@ flask-migrate
 pillow
 python-dotenv
 python-dotenv
-
+flask-socketio
 eventlet
 gunicorn
 
-
+eventlet>=0.33.0
