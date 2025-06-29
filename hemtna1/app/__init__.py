@@ -3,14 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
-from flask_socketio import SocketIO
+#from flask_socketio import SocketIO
 import os
 
 # تهيئة الإضافات
 db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate()
-socketio = SocketIO(cors_allowed_origins="*")
+#socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app():
     app = Flask(__name__)
