@@ -26,9 +26,7 @@ def create_app():
     app.register_blueprint(messages_bp, url_prefix="/api/messages")
     app.register_blueprint(users_bp, url_prefix="/api/users")
 
-    @app.route('/')
-    def index():
-        return "🚀 Shaban created Hemtna API! It's running."
+    
 
     with app.app_context():
         db.create_all()

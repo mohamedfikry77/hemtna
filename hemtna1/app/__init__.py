@@ -3,14 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
-#from flask_socketio import SocketIO
+# from flask_socketio import SocketIO
 import os
 
 # تهيئة الإضافات
 db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate()
-#socketio = SocketIO(cors_allowed_origins="*")
+# socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app():
     app = Flask(__name__)
@@ -19,12 +19,12 @@ def create_app():
     config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../config.py'))
     app.config.from_pyfile(config_path)
 
-    # تهيئة الإضافات مع التطبيق
+    # تهيئة الإضافات
     db.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
     CORS(app)
-    socketio.init_app(app)
+    # socketio.init_app(app)
 
     # تسجيل الـ Blueprints
     from hemtna1.app.routes.auth import auth_bp
@@ -41,12 +41,10 @@ def create_app():
     app.register_blueprint(chat_rooms_bp, url_prefix="/api/chat_rooms")
     app.register_blueprint(activities_bp, url_prefix="/api/activities")
 
-    # إعداد صفحة البداية
     @app.route('/')
     def index():
         return "🚀 Hemtna API is Live and Running!"
 
-    # التأكد من أن الجداول موجودة
     with app.app_context():
         db.create_all()
 
