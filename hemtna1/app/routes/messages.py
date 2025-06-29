@@ -1,6 +1,8 @@
 from flask import Blueprint, url_for
-from hemtna1.app import db, socketio  # ✅ مسارات الاستيراد الصحيحة
+from hemtna1.app import db
 from hemtna1.app.models import Message, User
+from hemtna1.app.__init__ import socketio
+from hemtna1.app.utils import get_profile_picture
 from flask_socketio import emit
 
 messages_bp = Blueprint('messages', __name__)
@@ -22,7 +24,7 @@ def handle_send_message(data):
         'user_id': msg.user_id,
         'doctor_id': msg.doctor_id,
         'username': user.username if user else "",
-        'profile_picture': url_for('static', filename='profile_pics/' + (user.profile_picture if user and user.profile_picture else 'default.png'), _external=True)
+        'profile_picture': get_profile_picture(user)
     }, room=data.get('room'))
 
 @socketio.on('edit_message')
@@ -36,7 +38,7 @@ def handle_edit_message(data):
             'id': msg.id,
             'message': msg.message,
             'username': user.username if user else "",
-            'profile_picture': url_for('static', filename='profile_pics/' + (user.profile_picture if user and user.profile_picture else 'default.png'), _external=True)
+            'profile_picture': get_profile_picture(user)
         }, room=data.get('room'))
 
 @socketio.on('delete_message')
@@ -70,6 +72,6 @@ def handle_get_messages(data):
             'user_id': msg.user_id or 0,
             'doctor_id': msg.doctor_id or 0,
             'username': user.username if user else "",
-            'profile_picture': url_for('static', filename='profile_pics/' + (user.profile_picture if user and user.profile_picture else 'default.png'), _external=True)
+            'profile_picture': get_profile_picture(user)
         })
     emit('messages_list', result)

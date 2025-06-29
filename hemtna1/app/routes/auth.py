@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify, url_for
-from hemtna1.app import db  # ✅ استيراد من المسار الصحيح
+from hemtna1.app import db
 from hemtna1.app.models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from hemtna1.app.utils.auth_helpers import generate_token
+from hemtna1.app.utils import get_profile_picture
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, decode_token
 from datetime import timedelta, datetime
 
@@ -28,7 +29,7 @@ def register():
     new_user.phone = data['phone']
     new_user.country_code = data.get('country_code', '')
 
-    child_birthdate_str = data.get('child_birthdate', None)
+    child_birthdate_str = data.get('child_birthdate')
     child_birthdate = None
     if child_birthdate_str:
         try:
@@ -79,7 +80,7 @@ def me():
         "child_education_level": user.child_education_level or "",
         "child_problem": user.child_problem or "",
         "doctor_specialty": user.doctor_specialty or "",
-        "profile_picture": url_for('static', filename='profile_pics/' + (user.profile_picture if user.profile_picture else 'default.png'), _external=True)
+        "profile_picture": get_profile_picture(user)
     }), 200
 
 @auth_bp.route('/forgot-password', methods=['POST'])
