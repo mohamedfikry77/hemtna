@@ -33,4 +33,11 @@ def create_app():
 
     return app
 
-
+def save_image(file, folder):
+    """Save an uploaded image file to the given folder and return the filename."""
+    filename = secure_filename(file.filename)
+    upload_folder = os.path.join(current_app.root_path, f'static/{folder}')
+    os.makedirs(upload_folder, exist_ok=True)
+    file_path = os.path.join(upload_folder, filename)
+    file.save(file_path)
+    return filename
