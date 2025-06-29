@@ -1,4 +1,6 @@
-from app import app, socketio
+from hemtna1.app import create_app, socketio
+
+app = create_app()
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=10000)  # أو أي بورت مناسب في Render
+    socketio.run(app, host='0.0.0.0', port=10000)
