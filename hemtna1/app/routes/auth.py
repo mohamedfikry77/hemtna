@@ -15,6 +15,7 @@ def get_profile_picture(user):
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+
     if User.query.filter_by(email=data['email']).first():
         return jsonify({"error": "Email already exists"}), 400
     if User.query.filter_by(phone=data['phone']).first():
@@ -22,9 +23,18 @@ def register():
 
     user_type = data['user_type']
     new_user = User()
-    new_user.first_name = data.get('first_name', '')
-    new_user.last_name = data.get('last_name', '')
-    new_user.username = f"{new_user.first_name} {new_user.last_name}".strip()
+    new_user.first_name = data.get('first_name', '').strip()
+    new_user.last_name = data.get('last_name', '').strip()
+    
+    # ✅ توليد اسم مستخدم فريد
+    base_username = f"{new_user.first_name}_{new_user.last_name}".lower().strip()
+    username = base_username
+    counter = 1
+    while User.query.filter_by(username=username).first():
+        username = f"{base_username}{counter}"
+        counter += 1
+    new_user.username = username
+
     new_user.email = data['email']
     new_user.password = generate_password_hash(data['password'])
     new_user.user_type = user_type
@@ -32,14 +42,13 @@ def register():
     new_user.phone = data['phone']
     new_user.country_code = data.get('country_code', '')
 
-    child_birthdate_str = data.get('child_birthdate', None)
-    child_birthdate = None
+    child_birthdate_str = data.get('child_birthdate')
+    new_user.child_birthdate = None
     if child_birthdate_str:
         try:
-            child_birthdate = datetime.strptime(child_birthdate_str, "%Y-%m-%d").date()
+            new_user.child_birthdate = datetime.strptime(child_birthdate_str, "%Y-%m-%d").date()
         except ValueError:
-            child_birthdate = None
-    new_user.child_birthdate = child_birthdate
+            pass
 
     if user_type in ['parent', 'Child']:
         new_user.child_education_level = data.get('child_education_level', '')
@@ -49,7 +58,12 @@ def register():
 
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({"message": "User registered successfully"}), 201
+
+    return jsonify({
+        "message": "User registered successfully",
+        "username": new_user.username  # ✅ رجعه عشان لو الفرونت عايزه
+    }), 201
+
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -60,6 +74,7 @@ def login():
 
     token = generate_token(str(user.id), user.user_type)
     return jsonify({"token": token, "username": user.username, "role": user.user_type})
+
 
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
@@ -83,8 +98,12 @@ def me():
         "child_education_level": user.child_education_level or "",
         "child_problem": user.child_problem or "",
         "doctor_specialty": user.doctor_specialty or "",
-        "profile_picture": get_profile_picture(user)
+        "profile_picture": (
+            url_for('static', filename='profile_pics/' + user.profile_picture, _external=True)
+            if user.profile_picture else None
+        )
     }), 200
+
 
 @auth_bp.route('/forgot-password', methods=['POST'])
 def forgot_password():
