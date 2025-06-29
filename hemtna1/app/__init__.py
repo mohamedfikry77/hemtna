@@ -31,14 +31,14 @@ def create_app():
     from hemtna1.app.routes.posts import posts_bp
    #ٍ from hemtna1.app.routes.messages import messages_bp
     from hemtna1.app.routes.users import users_bp
-    from hemtna1.app.routes.chat_rooms import chat_rooms_bp
+    #from hemtna1.app.routes.chat_rooms import chat_rooms_bp
     from hemtna1.app.routes.activities import activities_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(posts_bp, url_prefix="/api/posts")
     #app.register_blueprint(messages_bp, url_prefix="/api/messages")
     app.register_blueprint(users_bp, url_prefix="/api/users")
-    app.register_blueprint(chat_rooms_bp, url_prefix="/api/chat_rooms")
+    #ٍapp.register_blueprint(chat_rooms_bp, url_prefix="/api/chat_rooms")
     app.register_blueprint(activities_bp, url_prefix="/api/activities")
 
     @app.route('/')
