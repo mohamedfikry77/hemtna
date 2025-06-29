@@ -3,11 +3,14 @@ from hemtna1.app import db
 from hemtna1.app.models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from hemtna1.app.utils.auth_helpers import generate_token
-from hemtna1.app.utils import get_profile_picture
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, decode_token
 from datetime import timedelta, datetime
 
 auth_bp = Blueprint('auth', __name__)
+
+# ✅ دالة استخراج صورة البروفايل بشكل آمن
+def get_profile_picture(user):
+    return url_for('static', filename='profile_pics/' + (user.profile_picture if user.profile_picture else 'default.png'), _external=True)
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -29,7 +32,7 @@ def register():
     new_user.phone = data['phone']
     new_user.country_code = data.get('country_code', '')
 
-    child_birthdate_str = data.get('child_birthdate')
+    child_birthdate_str = data.get('child_birthdate', None)
     child_birthdate = None
     if child_birthdate_str:
         try:
